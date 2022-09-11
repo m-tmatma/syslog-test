@@ -61,6 +61,9 @@ void main()
     snprintf(work_to_ppid, sizeof(work_to_ppid), "/proc/%d/exe", ppid);
     readlink(work_to_ppid, path_to_ppid, sizeof(path_to_ppid));
 
+    printf("%s: %s\n", work_to_pid, path_to_pid);
+    printf("%s: %s\n", work_to_ppid, path_to_ppid);
+
     for (i = 0; i < sizeof(data)/sizeof(data[0]); i++)
     {
         syslog(data[i].level, "[PID=%d:%s] [PPID=%d:%s] %s", (int)getpid(), path_to_pid, (int)getppid(), path_to_ppid, data[i].data);
