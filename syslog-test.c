@@ -35,12 +35,34 @@
 
 void main()
 {
-    syslog(LOG_EMERG, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_EMERG");
-    syslog(LOG_ALERT, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_ALERT");
-    syslog(LOG_CRIT, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_CRIT");
-    syslog(LOG_ERR, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_ERR");
-    syslog(LOG_WARNING, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_WARNING");
-    syslog(LOG_NOTICE, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_NOTICE");
-    syslog(LOG_INFO, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_INFO");
-    syslog(LOG_DEBUG, "[PID=%d] [PPID=%d] %s", (int)getpid(), (int)getppid(), "LOG_DEBUG");
+    pid_t pid = getpid();
+    pid_t ppid = getppid();
+    char work_to_pid[256];
+    char work_to_ppid[256];
+    char path_to_pid[256];
+    char path_to_ppid[256];
+    struct {
+        int level;
+        const char * data;
+    } data[] = {
+        { LOG_EMERG   , "LOG_EMERG  "},
+        { LOG_ALERT   , "LOG_ALERT  "},
+        { LOG_CRIT    , "LOG_CRIT   "},
+        { LOG_ERR     , "LOG_ERR    "},
+        { LOG_WARNING , "LOG_WARNING"},
+        { LOG_NOTICE  , "LOG_NOTICE "},
+        { LOG_INFO    , "LOG_INFO   "},
+        { LOG_DEBUG   , "LOG_DEBUG  "},
+    };
+    int i;
+    snprintf(work_to_pid, sizeof(work_to_pid), "/proc/%d/exe", pid);
+    readlink(work_to_pid, path_to_pid, sizeof(path_to_pid));
+
+    snprintf(work_to_ppid, sizeof(work_to_ppid), "/proc/%d/exe", ppid);
+    readlink(work_to_ppid, path_to_ppid, sizeof(path_to_ppid));
+
+    for (i = 0; i < sizeof(data)/sizeof(data[0]); i++)
+    {
+        syslog(data[i].level, "[PID=%d:%s] [PPID=%d:%s] %s", (int)getpid(), path_to_pid, (int)getppid(), path_to_ppid, data[i].data);
+    }
 }
